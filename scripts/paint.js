@@ -1,10 +1,14 @@
-
+//p5.js drawing app by kuskus265 http://github.com/kuskus265 
+//Ultra simple, non OOP, ugly, super l33t, but hey. I never coded in js. send help.
 let c = 70;
 var i = 0;
 let buffersx = [];
 let buffersy = [];
 let bufferex = [];
 let bufferey = [];
+let col_buf = [];
+let weight_buf = [];
+let tool_buf = [];
 let color_pick;
 let bg_color_pick;
 let weight_slider;
@@ -17,6 +21,10 @@ var toolbar_pos_x;
 var toolbar_pos_y;
 var tool;
 var hue;
+var stroke = {
+    "weight": 0,
+    "col" : 0
+}
 
 
 function toolbar_bg(){
@@ -33,7 +41,7 @@ function toolbar(){
     toolbar_pos_x = windowWidth - windowWidth / 3.6;
     toolbar_pos_y = windowHeight - windowHeight / 2.6;
     clear_btn = createButton('Clear');
-    move_toolbar_btn = createButton('');
+    move_toolbar_btn = createButton('Load buffer');
     eraser_btn = createButton('Eraser');
     brush_btn = createButton('Brush');
     secret_btn = createButton('Click meee');
@@ -64,6 +72,7 @@ function draw(){
     brush_btn.mousePressed(brush);
     secret_btn.mousePressed(secret);                
     bg_color_pick.mousePressed(changeBgColor);
+    move_toolbar_btn.mousePressed(drawBuffer);
     toolbar_bg();
 }
 
@@ -74,6 +83,7 @@ function changeBgColor(){
 function clearCanvas(){
     clear();
     background(color(default_bg_col));
+    clearBuffer();
 }
 
 function brush(){
@@ -89,19 +99,33 @@ function secret(){
 
 function drawBuffer(){
     buffersx.forEach(drwbuf);
-    console.log('attempted');
 }
 
 function drwbuf(item, index){
+    if (tool_buf[index] == 1) {
+        stroke(col_buf[index], 200, 200);
+    }
+    else{
+        stroke(col_buf[index]);
+    }
+    strokeWeight(weight_buf[index]);
     line(buffersx[index], buffersy[index], bufferex[index], bufferey[index]);
 }
 function clearBuffer(item, index){
-
+    bufferex = [];
+    bufferey = [];
+    buffersx = [];
+    bufferxy = [];
+    col_buf = [];
+    weight_buf = [];
+    tool_buf = [];
 }
  
 function mouseDragged() {
+    stroke.weight = weight_slider.value();
     if (tool == 0){
-        stroke(color_pick.color());
+        stroke.col = color_pick.color();
+        stroke(stroke.col);
     }
     else if (tool == 1){
         if (hue > 360) {
@@ -111,18 +135,25 @@ function mouseDragged() {
           }
           colorMode(HSL, 360);
           noStroke();
-          stroke(hue, 200, 200);
+          stroke.col = hue;
+          console.log(stroke.col);
+          stroke(stroke.col, 200, 200);
     }
     else{
-        stroke(default_bg_col);
+        stroke.col = default_bg_col;
+        stroke(stroke.col);
     }
-    strokeWeight(weight_slider.value());
+    strokeWeight(stroke.weight);
     line(mouseX, mouseY, pmouseX, pmouseY);
+    //--------------------------------------------------
+    //Storing into super ugly buffer
     buffersx.push(mouseX);
     buffersy.push(mouseY);
     bufferex.push(pmouseX);
     bufferey.push(pmouseY);
-    console.log("pushed");
-
+    col_buf.push(stroke.col);
+    weight_buf.push(stroke.weight);
+    tool_buf.push(tool);
+    //--------------------------------------------------
     return false; //cross browser compatibility
 }
