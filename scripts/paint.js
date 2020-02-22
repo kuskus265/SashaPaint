@@ -1,12 +1,16 @@
 
 let c = 70;
 var i = 0;
-let buffer = [];
+let buffersx = [];
+let buffersy = [];
+let bufferex = [];
+let bufferey = [];
 let color_pick;
 let bg_color_pick;
 let weight_slider;
 let clear_btn;
 let eraser_btn;
+let secret_btn;
 let textDiv;
 var default_bg_col = '#ffffff';
 var toolbar_pos_x;
@@ -14,12 +18,6 @@ var toolbar_pos_y;
 var tool;
 var hue;
 
-var buf_dict = {
-    sx: 0,
-    sy: 0,
-    ex: 0,
-    ey: 0
-}
 
 function toolbar_bg(){
     push();
@@ -38,6 +36,7 @@ function toolbar(){
     move_toolbar_btn = createButton('');
     eraser_btn = createButton('Eraser');
     brush_btn = createButton('Brush');
+    secret_btn = createButton('Click meee');
     textDiv = createDiv('I have seks and <br> you should too');
     color_pick = createColorPicker(color('black'));
     bg_color_pick = createColorPicker(color(default_bg_col));
@@ -62,7 +61,8 @@ function setup() {
 function draw(){
     clear_btn.mousePressed(clearCanvas);
     eraser_btn.mousePressed(eraser);
-    brush_btn.mousePressed(drawBuffer);
+    brush_btn.mousePressed(brush);
+    secret_btn.mousePressed(secret);                
     bg_color_pick.mousePressed(changeBgColor);
     toolbar_bg();
 }
@@ -82,20 +82,18 @@ function brush(){
 
 function eraser(){
     tool = 2;
-    console.log(buffer[4]);
-    console.log(buffer[13]);
 }
 function secret(){
     tool = 1;
 }
 
 function drawBuffer(){
-    buffer.forEach(drwbuf);
+    buffersx.forEach(drwbuf);
+    console.log('attempted');
 }
 
 function drwbuf(item, index){
-    console.log(index);
-    line(buffer[index].sx, buffer[index].sy, buffer[index].ex, buffer[index].ey);
+    line(buffersx[index], buffersy[index], bufferex[index], bufferey[index]);
 }
 function clearBuffer(item, index){
 
@@ -120,14 +118,11 @@ function mouseDragged() {
     }
     strokeWeight(weight_slider.value());
     line(mouseX, mouseY, pmouseX, pmouseY);
-    buf_dict.sx = mouseX;
-    buf_dict.sy = mouseY;
-    buf_dict.ex = pmouseX;
-    buf_dict.ey = pmouseY;
-    buffer.push(buf_dict.sx);
-    console.log(buffer[i]);
-    i++;
+    buffersx.push(mouseX);
+    buffersy.push(mouseY);
+    bufferex.push(pmouseX);
+    bufferey.push(pmouseY);
+    console.log("pushed");
 
     return false; //cross browser compatibility
 }
- 
