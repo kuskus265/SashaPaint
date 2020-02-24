@@ -37,24 +37,33 @@ function toolbar_bg(){
     pop();
 }
 
+function updateToolbar(){
+    document.getElementById("textDiv").innerHTML = `Brush size: ${weight_slider.value()}px`;
+}
+
 function toolbar(){
     toolbar_pos_x = windowWidth - windowWidth / 3.6;
     toolbar_pos_y = windowHeight - windowHeight / 2.6;
     clear_btn = createButton('Clear');
     move_toolbar_btn = createButton('Load buffer');
-    eraser_btn = createButton('Eraser');
-    brush_btn = createButton('Brush');
+    eraser_btn = createButton();
+    brush_btn = createButton("<img src =\"/assets/ico/64px/paintbrush2.png\" width=30 height=30 value =\"brush\">");
     secret_btn = createButton('Click meee');
-    textDiv = createDiv('I have seks and <br> you should too');
     color_pick = createColorPicker(color('black'));
     bg_color_pick = createColorPicker(color(default_bg_col));
     weight_slider = createSlider(1, 50, 8, 1);
-    textDiv.position(toolbar_pos_x + 20, toolbar_pos_y+ 120);
+    weight_slider.changed(updateToolbar)
+    textDiv = createDiv(`Brush size: ${weight_slider.value()}px`);
     textDiv.style('color:black');  
+    textDiv.id('textDiv');
+    //---------Position of elements-----------
+    textDiv.position(toolbar_pos_x + 123, toolbar_pos_y+ 20);
     color_pick.position(toolbar_pos_x + 20, toolbar_pos_y + 30);
     bg_color_pick.position(toolbar_pos_x + 20, toolbar_pos_y + 60);
-    weight_slider.position(toolbar_pos_x + 50, toolbar_pos_y + 90);
-    clear_btn.position(windowWidth - windowWidth / 5, windowHeight / 3);
+    weight_slider.position(toolbar_pos_x + 94, toolbar_pos_y + 45);
+    clear_btn.position(toolbar_pos_x + 20, toolbar_pos_y + 135);
+    brush_btn.position(toolbar_pos_x + 70, toolbar_pos_y + 120);
+    eraser_btn.position(toolbar_pos_x + 70, toolbar_pos_y + 200);
 }
 
 function setup() {

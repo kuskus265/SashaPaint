@@ -1,0 +1,17 @@
+body{
+     font-family: "Roboto";
+     font-weight: 300;
+    }
+ /* Style buttons */
+ button{
+    background-color: transparent; /* Blue background */
+    border: none; /* Remove borders */
+    color: white; /* White text */
+    cursor: pointer; /* Mouse pointer on hover */
+    border-radius: 80%;
+  }
+  
+  /* Darker background on mouse-over */
+  button:hover {
+    background-color: RoyalBlue;
+  } 
