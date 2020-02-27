@@ -1,1 +1,3 @@
 # SashaPaint
+
+Icons made by Freepik from www.flaticon.com
