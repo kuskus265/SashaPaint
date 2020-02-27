@@ -120,11 +120,12 @@ function drawBuffer(){
 }
 
 function moveToolbar(){
-    prev_tool = tool;
+
     tool = 3;
 }
 function setPrevTool(){
     tool = prev_tool;
+    document.removeEventListener('mouseup', setPrevTool, false);
 }
 
 function drwbuf(item, index){
@@ -173,6 +174,7 @@ function mouseDragged() {
         }
         strokeWeight(stroke.weight);
         line(mouseX, mouseY, pmouseX, pmouseY);
+        prev_tool = tool;
         //--------------------------------------------------
         //Storing into super ugly buffer
         buffersx.push(mouseX);
@@ -191,7 +193,6 @@ function mouseDragged() {
         drawBuffer();
         toolbar_bg();
         toolbarPosition();
-        document.removeEventListener('mouseup', setPrevTool, false);
     }
     console.log(tool);    //--------------------------------------------------
     return false; //cross browser compatibility
