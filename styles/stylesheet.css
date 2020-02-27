@@ -1,0 +1,27 @@
+body{
+     font-family: "Roboto";
+     font-weight: 300;
+    }
+ button{
+    background-color: lightgray;
+    border: none;
+    color: red; 
+    cursor: pointer;
+    text-align: center;
+    width: 46px;
+    height: 33px;
+  }
+  
+  
+  button:hover {
+    transition-property: background-color;
+    transition: ease-in-out;
+    transition-delay: 42ms;
+    transition-duration: 333ms;
+    background-color: RoyalBlue;
+  } 
+
+  #move_btn{
+    width: 30px;
+    height: 30px;
+  }
