@@ -65,10 +65,10 @@ function toolbarPosition(){
     color_pick.position(toolbar_pos_x + 20, toolbar_pos_y + 30);
     bg_color_pick.position(toolbar_pos_x + 20, toolbar_pos_y + 60);
     weight_slider.position(toolbar_pos_x + 94, toolbar_pos_y + 45);
-    clear_btn.position(toolbar_pos_x + 86, toolbar_pos_y + 153);
-    brush_btn.position(toolbar_pos_x + 30, toolbar_pos_y + 110);
-    eraser_btn.position(toolbar_pos_x + 86, toolbar_pos_y + 110);
-    secret_btn.position(toolbar_pos_x + 30, toolbar_pos_y + 153);
+    clear_btn.position(toolbar_pos_x + 86, toolbar_pos_y + 154);
+    brush_btn.position(toolbar_pos_x + 30, toolbar_pos_y + 100);
+    eraser_btn.position(toolbar_pos_x + 86, toolbar_pos_y + 100);
+    secret_btn.position(toolbar_pos_x + 30, toolbar_pos_y + 154);
     move_toolbar_btn.position(toolbar_pos_x + 320, toolbar_pos_y + 20);
     
     
