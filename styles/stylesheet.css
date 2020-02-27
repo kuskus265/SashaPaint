@@ -2,18 +2,17 @@ body{
      font-family: "Roboto";
      font-weight: 300;
     }
- /* Style buttons */
  button{
-    background-color: lightgray; /* Blue background */
-    border: none; /* Remove borders */
-    color: red; /* White text */
-    cursor: pointer; /* Mouse pointer on hover */
+    background-color: lightgray;
+    border: none;
+    color: red; 
+    cursor: pointer;
     text-align: center;
     width: 46px;
     height: 33px;
   }
   
-  /* Darker background on mouse-over */
+  
   button:hover {
     transition-property: background-color;
     transition: ease-in-out;
