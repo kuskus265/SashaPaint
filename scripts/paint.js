@@ -20,6 +20,7 @@ var default_bg_col = '#ffffff';
 var toolbar_pos_x;
 var toolbar_pos_y;
 var tool;
+var prev_tool;
 var hue;
 var stroke = {
     "weight": 0,
@@ -41,14 +42,14 @@ function updateToolbar(){
     document.getElementById("textDiv").innerHTML = `Brush size: ${weight_slider.value()}px`;
 }
 
-function toolbar(){
+function toolbarSetup(){
     toolbar_pos_x = windowWidth - windowWidth / 3.6;
     toolbar_pos_y = windowHeight - windowHeight / 2.6;
-    clear_btn = createButton('Clear');
-    move_toolbar_btn = createButton('Load buffer');
-    eraser_btn = createButton();
-    brush_btn = createButton("<img src =\"/assets/ico/64px/paintbrush2.png\" width=30 height=30 value =\"brush\">");
-    secret_btn = createButton('Click meee');
+    clear_btn = createButton("<img src =\"./assets/ico/64px/clear.png\" width=30 height=30 title=\"Clear Canvas\">");
+    move_toolbar_btn = createButton("<img src =\"./assets/ico/64px/move.png\" width=16 height=16 title=\"Move Toolbar\">"); //move toolbar is currently assigned to Load buffer, e.g. drawBuffer()
+    eraser_btn = createButton("<img src =\"./assets/ico/64px/eraser.png\" width=30 height=30 title=\"Eraser\">");
+    brush_btn = createButton("<img src =\"./assets/ico/64px/brush.png\" width=30 height=30 title=\"Brush\">");
+    secret_btn = createButton("<img src =\"./assets/ico/64px/secret.png\" width=30 height=30 title=\"<3\">");
     color_pick = createColorPicker(color('black'));
     bg_color_pick = createColorPicker(color(default_bg_col));
     weight_slider = createSlider(1, 50, 8, 1);
@@ -56,21 +57,29 @@ function toolbar(){
     textDiv = createDiv(`Brush size: ${weight_slider.value()}px`);
     textDiv.style('color:black');  
     textDiv.id('textDiv');
-    //---------Position of elements-----------
+    move_toolbar_btn.id('move_btn');
+}
+
+function toolbarPosition(){
     textDiv.position(toolbar_pos_x + 123, toolbar_pos_y+ 20);
     color_pick.position(toolbar_pos_x + 20, toolbar_pos_y + 30);
     bg_color_pick.position(toolbar_pos_x + 20, toolbar_pos_y + 60);
     weight_slider.position(toolbar_pos_x + 94, toolbar_pos_y + 45);
-    clear_btn.position(toolbar_pos_x + 20, toolbar_pos_y + 135);
-    brush_btn.position(toolbar_pos_x + 70, toolbar_pos_y + 120);
-    eraser_btn.position(toolbar_pos_x + 70, toolbar_pos_y + 200);
+    clear_btn.position(toolbar_pos_x + 86, toolbar_pos_y + 153);
+    brush_btn.position(toolbar_pos_x + 30, toolbar_pos_y + 110);
+    eraser_btn.position(toolbar_pos_x + 86, toolbar_pos_y + 110);
+    secret_btn.position(toolbar_pos_x + 30, toolbar_pos_y + 153);
+    move_toolbar_btn.position(toolbar_pos_x + 320, toolbar_pos_y + 20);
+    
+    
 }
 
 function setup() {
     
      createCanvas(windowWidth, windowHeight);
      background(color(default_bg_col));
-     toolbar();
+     toolbarSetup();
+     toolbarPosition();
      tool = 0;
      hue = 0;
 }
@@ -81,7 +90,7 @@ function draw(){
     brush_btn.mousePressed(brush);
     secret_btn.mousePressed(secret);                
     bg_color_pick.mousePressed(changeBgColor);
-    move_toolbar_btn.mousePressed(drawBuffer);
+    move_toolbar_btn.mousePressed(moveToolbar);
     toolbar_bg();
 }
 
@@ -110,6 +119,14 @@ function drawBuffer(){
     buffersx.forEach(drwbuf);
 }
 
+function moveToolbar(){
+    prev_tool = tool;
+    tool = 3;
+}
+function setPrevTool(){
+    tool = prev_tool;
+}
+
 function drwbuf(item, index){
     if (tool_buf[index] == 1) {
         stroke(col_buf[index], 200, 200);
@@ -131,38 +148,51 @@ function clearBuffer(item, index){
 }
  
 function mouseDragged() {
-    stroke.weight = weight_slider.value();
-    if (tool == 0){
-        stroke.col = color_pick.color();
-        stroke(stroke.col);
+    if (tool != 3){
+        stroke.weight = weight_slider.value();
+        switch (tool) {
+            case 0: 
+                stroke.col = color_pick.color();
+                stroke(stroke.col);
+                break;
+            case 1:
+                if (hue > 360) {
+                    hue = 0;
+                } else {
+                    hue++;
+                }
+                colorMode(HSL, 360);
+                noStroke();
+                stroke.col = hue;
+                stroke(stroke.col, 200, 200);
+                break;
+            case 2:
+                stroke.col = default_bg_col;
+                stroke(stroke.col);
+                break;
+        }
+        strokeWeight(stroke.weight);
+        line(mouseX, mouseY, pmouseX, pmouseY);
+        //--------------------------------------------------
+        //Storing into super ugly buffer
+        buffersx.push(mouseX);
+        buffersy.push(mouseY);
+        bufferex.push(pmouseX);
+        bufferey.push(pmouseY);
+        col_buf.push(stroke.col);
+        weight_buf.push(stroke.weight);
+        tool_buf.push(tool);
     }
-    else if (tool == 1){
-        if (hue > 360) {
-            hue = 0;
-          } else {
-            hue++;
-          }
-          colorMode(HSL, 360);
-          noStroke();
-          stroke.col = hue;
-          console.log(stroke.col);
-          stroke(stroke.col, 200, 200);
+    else {
+        toolbar_pos_x = mouseX - 335;
+        toolbar_pos_y = mouseY - 45;
+        document.addEventListener('mouseup', setPrevTool, false);
+        background(default_bg_col);
+        drawBuffer();
+        toolbar_bg();
+        toolbarPosition();
+        document.removeEventListener('mouseup', setPrevTool, false);
     }
-    else{
-        stroke.col = default_bg_col;
-        stroke(stroke.col);
-    }
-    strokeWeight(stroke.weight);
-    line(mouseX, mouseY, pmouseX, pmouseY);
-    //--------------------------------------------------
-    //Storing into super ugly buffer
-    buffersx.push(mouseX);
-    buffersy.push(mouseY);
-    bufferex.push(pmouseX);
-    bufferey.push(pmouseY);
-    col_buf.push(stroke.col);
-    weight_buf.push(stroke.weight);
-    tool_buf.push(tool);
-    //--------------------------------------------------
+    console.log(tool);    //--------------------------------------------------
     return false; //cross browser compatibility
 }

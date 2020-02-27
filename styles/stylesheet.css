@@ -4,14 +4,25 @@ body{
     }
  /* Style buttons */
  button{
-    background-color: transparent; /* Blue background */
+    background-color: lightgray; /* Blue background */
     border: none; /* Remove borders */
-    color: white; /* White text */
+    color: red; /* White text */
     cursor: pointer; /* Mouse pointer on hover */
-    border-radius: 80%;
+    text-align: center;
+    width: 46px;
+    height: 33px;
   }
   
   /* Darker background on mouse-over */
   button:hover {
+    transition-property: background-color;
+    transition: ease-in-out;
+    transition-delay: 42ms;
+    transition-duration: 333ms;
     background-color: RoyalBlue;
   } 
+
+  #move_btn{
+    width: 30px;
+    height: 30px;
+  }
