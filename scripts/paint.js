@@ -9,7 +9,7 @@ let bufferey = [];
 let col_buf = [];
 let weight_buf = [];
 let tool_buf = [];
-let color_pick;
+let color_pick = 20;
 let bg_color_pick;
 let weight_slider;
 let clear_btn;
@@ -22,10 +22,19 @@ var toolbar_pos_y;
 var tool;
 var prev_tool;
 var hue;
+var prev_stroke;
 var stroke = {
     "weight": 0,
     "col" : 0
 }
+
+function colorPickPos(x_pos, y_pos, c) {
+    var d = document.getElementById(c);
+    d.style.position = "absolute";
+    d.style.left = x_pos+'px';
+    d.style.top = y_pos+'px';
+    d.style.width = '45px';
+  }
 
 
 function toolbar_bg(){
@@ -50,20 +59,21 @@ function toolbarSetup(){
     eraser_btn = createButton("<img src =\"./assets/ico/64px/eraser.png\" width=30 height=30 title=\"Eraser\">");
     brush_btn = createButton("<img src =\"./assets/ico/64px/brush.png\" width=30 height=30 title=\"Brush\">");
     secret_btn = createButton("<img src =\"./assets/ico/64px/secret.png\" width=30 height=30 title=\"<3\">");
-    color_pick = createColorPicker(color('black'));
-    bg_color_pick = createColorPicker(color(default_bg_col));
     weight_slider = createSlider(1, 50, 8, 1);
     weight_slider.changed(updateToolbar)
     textDiv = createDiv(`Brush size: ${weight_slider.value()}px`);
     textDiv.style('color:black');  
     textDiv.id('textDiv');
     move_toolbar_btn.id('move_btn');
+
 }
+
 
 function toolbarPosition(){
     textDiv.position(toolbar_pos_x + 123, toolbar_pos_y+ 20);
-    color_pick.position(toolbar_pos_x + 20, toolbar_pos_y + 30);
-    bg_color_pick.position(toolbar_pos_x + 20, toolbar_pos_y + 60);
+    colorPickPos(toolbar_pos_x + 20, toolbar_pos_y + 30, 'col1');
+    //color_pick.position(toolbar_pos_x + 20, toolbar_pos_y + 30);
+    //bg_color_pick.position(toolbar_pos_x + 20, toolbar_pos_y + 60);
     weight_slider.position(toolbar_pos_x + 94, toolbar_pos_y + 45);
     clear_btn.position(toolbar_pos_x + 86, toolbar_pos_y + 154);
     brush_btn.position(toolbar_pos_x + 30, toolbar_pos_y + 100);
@@ -83,19 +93,21 @@ function setup() {
      tool = 0;
      hue = 0;
 }
+
  
 function draw(){
     clear_btn.mousePressed(clearCanvas);
     eraser_btn.mousePressed(eraser);
     brush_btn.mousePressed(brush);
     secret_btn.mousePressed(secret);                
-    bg_color_pick.mousePressed(changeBgColor);
+    //bg_color_pick.mousePressed(changeBgColor);
     move_toolbar_btn.mousePressed(moveToolbar);
     toolbar_bg();
+
 }
 
 function changeBgColor(){
-    background(bg_color_pick.color());
+    background(default_bg_col);
 }
 
 function clearCanvas(){
@@ -152,8 +164,9 @@ function mouseDragged() {
     if (tool != 3){
         stroke.weight = weight_slider.value();
         switch (tool) {
-            case 0: 
-                stroke.col = color_pick.color();
+            case 0:
+                prev_stroke = stroke.col;
+                stroke.col = "#" + document.getElementById('col1').value;
                 stroke(stroke.col);
                 break;
             case 1:
@@ -177,13 +190,20 @@ function mouseDragged() {
         prev_tool = tool;
         //--------------------------------------------------
         //Storing into super ugly buffer
-        buffersx.push(mouseX);
-        buffersy.push(mouseY);
-        bufferex.push(pmouseX);
-        bufferey.push(pmouseY);
-        col_buf.push(stroke.col);
-        weight_buf.push(stroke.weight);
-        tool_buf.push(tool);
+        if (prev_stroke != stroke.col){
+            clear();
+            background(color(default_bg_col));
+            drawBuffer();              
+        }
+        else{
+            buffersx.push(mouseX);
+            buffersy.push(mouseY);
+            bufferex.push(pmouseX);
+            bufferey.push(pmouseY);
+            col_buf.push(stroke.col);
+            weight_buf.push(stroke.weight);
+            tool_buf.push(tool);
+        }
     }
     else {
         toolbar_pos_x = mouseX - 335;
@@ -194,6 +214,6 @@ function mouseDragged() {
         toolbar_bg();
         toolbarPosition();
     }
-    console.log(tool);    //--------------------------------------------------
+   //--------------------------------------------------
     return false; //cross browser compatibility
 }
