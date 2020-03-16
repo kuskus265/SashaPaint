@@ -1,7 +1,5 @@
 //p5.js drawing app by kuskus265 http://github.com/kuskus265 
 //Ultra simple, non OOP, ugly, super l33t, but hey. I never coded in js. send help.
-let c = 70;
-var i = 0;
 let buffersx = [];
 let buffersy = [];
 let bufferex = [];
@@ -12,10 +10,15 @@ let tool_buf = [];
 let color_pick = 20;
 let bg_color_pick;
 let weight_slider;
+let shiftX;
+let shiftY;
 let clear_btn;
 let eraser_btn;
 let secret_btn;
 let textDiv;
+let move_toolbar_btn;
+let move_btn;
+let toolbar_rect;
 var default_bg_col = '#ffffff';
 var toolbar_pos_x;
 var toolbar_pos_y;
@@ -65,11 +68,14 @@ function toolbarSetup(){
     textDiv.style('color:black');  
     textDiv.id('textDiv');
     move_toolbar_btn.id('move_btn');
+    move_btn = document.getElementById('move_btn');
+    shiftX = mouseX - move_btn.getBoundingClientRect().left;
+    shiftY = mouseY - move_btn.getBoundingClientRect().top;
 
 }
 
-
 function toolbarPosition(){
+    
     textDiv.position(toolbar_pos_x + 123, toolbar_pos_y+ 20);
     colorPickPos(toolbar_pos_x + 20, toolbar_pos_y + 30, 'col1');
     //color_pick.position(toolbar_pos_x + 20, toolbar_pos_y + 30);
@@ -84,26 +90,49 @@ function toolbarPosition(){
     
 }
 
-function setup() {
-    
-     createCanvas(windowWidth, windowHeight);
-     background(color(default_bg_col));
-     toolbarSetup();
-     toolbarPosition();
-     tool = 0;
-     hue = 0;
+function moveToolbar(){
+    tool = 3;
+    toolbar_pos_x = mouseX - 325;
+    toolbar_pos_y = mouseY - 35;
+    toolbarPosition();
+    clear();
+    drawBuffer();
 }
 
- 
+function setup() {
+    
+    createCanvas(windowWidth, windowHeight);
+    background(color(default_bg_col));
+    toolbarSetup();
+    toolbarPosition();
+    tool = 0;
+    hue = 0;
+}
+
+
 function draw(){
     clear_btn.mousePressed(clearCanvas);
     eraser_btn.mousePressed(eraser);
     brush_btn.mousePressed(brush);
     secret_btn.mousePressed(secret);                
-    //bg_color_pick.mousePressed(changeBgColor);
-    move_toolbar_btn.mousePressed(moveToolbar);
+    //bg_color_pick.mousePressed(changeBgColor)
+    move_btn.onmousedown = function(event){
+        toolbar_pos_x = mouseX - 325;
+        toolbar_pos_y = mouseY - 35;
+        //background(default_bg_col);
+        document.body.append(move_btn);
+        document.addEventListener('mousemove', moveToolbar);
+        move_btn.onmouseup = function(){
+            document.removeEventListener('mousemove', moveToolbar);
+            tool = prev_tool;
+            move_btn.onmouseup = null;
+        };
+    };
     toolbar_bg();
-
+    move_btn.ondragstart = function() {
+        return false;
+      };
+    
 }
 
 function changeBgColor(){
@@ -131,10 +160,7 @@ function drawBuffer(){
     buffersx.forEach(drwbuf);
 }
 
-function moveToolbar(){
 
-    tool = 3;
-}
 function setPrevTool(){
     tool = prev_tool;
     document.removeEventListener('mouseup', setPrevTool, false);
@@ -179,10 +205,12 @@ function mouseDragged() {
                 noStroke();
                 stroke.col = hue;
                 stroke(stroke.col, 200, 200);
+                prev_stroke = stroke.col;
                 break;
             case 2:
                 stroke.col = default_bg_col;
                 stroke(stroke.col);
+                prev_stroke = stroke.col;
                 break;
         }
         strokeWeight(stroke.weight);
@@ -193,7 +221,7 @@ function mouseDragged() {
         if (prev_stroke != stroke.col){
             clear();
             background(color(default_bg_col));
-            drawBuffer();              
+            drawBuffer();           
         }
         else{
             buffersx.push(mouseX);
@@ -205,15 +233,6 @@ function mouseDragged() {
             tool_buf.push(tool);
         }
     }
-    else {
-        toolbar_pos_x = mouseX - 335;
-        toolbar_pos_y = mouseY - 45;
-        document.addEventListener('mouseup', setPrevTool, false);
-        background(default_bg_col);
-        drawBuffer();
-        toolbar_bg();
-        toolbarPosition();
-    }
-   //--------------------------------------------------
+    //--------------------------------------------------
     return false; //cross browser compatibility
 }

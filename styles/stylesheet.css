@@ -18,7 +18,7 @@ body{
     transition: ease-in-out;
     transition-delay: 42ms;
     transition-duration: 333ms;
-    background-color: RoyalBlue;
+    background-color: red;
   } 
 
   #move_btn{
