@@ -1,5 +1,6 @@
-//p5.js drawing app by kuskus265 http://github.com/kuskus265 
-//Ultra simple, non OOP, ugly, super l33t, but hey. I never coded in js. send help.
+/*Definování proměnných:
+Chtěla jsem přidat i další funkce ale čas úplně nedovolil, ikonky jsou royalty-free
+*/
 let buffersx = [];
 let buffersy = [];
 let bufferex = [];
@@ -32,7 +33,9 @@ var stroke = {
     "col" : 0
 }
 
-function colorPickPos(x_pos, y_pos, c) {
+//-------------------------------------------------------------------
+
+function colorPickPos(x_pos, y_pos, c) { //Umístění výběru barev, relativní k toolbaru
     var d = document.getElementById(c);
     d.style.position = "absolute";
     d.style.left = x_pos+'px';
@@ -41,21 +44,21 @@ function colorPickPos(x_pos, y_pos, c) {
   }
 
 
-function toolbar_bg(){
-    push();
+function toolbar_bg(){ //vykreslení pozadí toolbaru
+    push(); //dočasná změna stylu
     fill('#ffffff');
     strokeJoin(BEVEL);
     strokeWeight(3);
     stroke(51);
     rect(toolbar_pos_x, toolbar_pos_y, 350, 250);
-    pop();
+    pop(); //vrácení stylu zpět
 }
 
-function updateToolbar(){
+function updateToolbar(){ //pouze aktualizuje text o velikosti štětce
     document.getElementById("textDiv").innerHTML = `Brush size: ${weight_slider.value()}px`;
 }
 
-function toolbarSetup(){
+function toolbarSetup(){ //celý setup kod pro toolbar, pozice nástrojů, barev atd.
     toolbar_pos_x = windowWidth - windowWidth / 3.6;
     toolbar_pos_y = windowHeight - windowHeight / 2.6;
     clear_btn = createButton("<img src =\"./assets/ico/64px/clear.png\" width=30 height=30 title=\"Clear Canvas\">");
@@ -79,8 +82,6 @@ function toolbarPosition(){
     
     textDiv.position(toolbar_pos_x + 123, toolbar_pos_y+ 20);
     colorPickPos(toolbar_pos_x + 20, toolbar_pos_y + 30, 'col1');
-    //color_pick.position(toolbar_pos_x + 20, toolbar_pos_y + 30);
-    //bg_color_pick.position(toolbar_pos_x + 20, toolbar_pos_y + 60);
     weight_slider.position(toolbar_pos_x + 94, toolbar_pos_y + 45);
     clear_btn.position(toolbar_pos_x + 86, toolbar_pos_y + 154);
     brush_btn.position(toolbar_pos_x + 30, toolbar_pos_y + 100);
@@ -99,7 +100,8 @@ function moveToolbar(){
     drawBuffer();
 }
 
-function setup() {
+function setup() { /*jedna ze dvou základních funkcí - vytvoří plátno(canvas), na kterém se všechno vykreslí,
+    zároveň taky vykreslí toolbar a nastaví defaultní hodnoty pro nástroj a barvu*/
     
     createCanvas(windowWidth, windowHeight);
     background(color(default_bg_col));
@@ -110,7 +112,7 @@ function setup() {
 }
 
 
-function draw(){
+function draw(){ //Druhá ze základních funkcí vyžadovaných knihovnou p5.js, překreslí stránku 60krát za sekundu
     clear_btn.mousePressed(clearCanvas);
     eraser_btn.mousePressed(eraser);
     brush_btn.mousePressed(brush);
@@ -119,7 +121,7 @@ function draw(){
     document.addEventListener('mousedown', drawPoint);
           
     //bg_color_pick.mousePressed(changeBgColor)
-    move_btn.onmousedown = function(event){
+    move_btn.onmousedown = function(event){ //přetahování toolbaru po plátně
         toolbar_pos_x = mouseX - 325;
         toolbar_pos_y = mouseY - 35;
         //background(default_bg_col);
@@ -132,13 +134,16 @@ function draw(){
         };
     };
     toolbar_bg();
-    move_btn.ondragstart = function() {
+    move_btn.ondragstart = function() { //POmoc internetu, bez toho přetahování toolbaru úplně nefunguje
         return false;
       };
 
     
 }
-
+/*Následují nástroje
+Každý nástroj má přiřazené číslo, nikdy jsem moc neprogramovala, tak to asi není nejlepší řešení, ale funguje
+Taky jsou tady funkce co se týkají bufferu (schránky), do které se ukládají data o tom co je na plátně, když se celé plátno překresluje
+*/
 function changeBgColor(){
     background(default_bg_col);
 }
@@ -156,12 +161,12 @@ function brush(){
 function eraser(){
     tool = 2;
 }
-function secret(){
+function secret(){ //Zkuste si to, je to hustý
     tool = 1;
 }
 
 function drawBuffer(){
-    buffersx.forEach(drwbuf);
+    buffersx.forEach(drwbuf); //pro každou položku v poli "buffersx" zavolej funkci "drwbuf"
 }
 
 
@@ -170,7 +175,7 @@ function setPrevTool(){
     document.removeEventListener('mouseup', setPrevTool, false);
 }
 
-function drwbuf(item, index){
+function drwbuf(item, index){ //funkce která se iteruje tolikrát, kolik je položek v poli bufferu viz řádek 169
     if (tool_buf[index] == 1) {
         stroke(col_buf[index], 200, 200);
     }
@@ -192,7 +197,7 @@ function clearBuffer(item, index){
     tool_buf = [];
 }
 
-function drawPoint() {
+function drawPoint() { //tečkááááá
     push();
     stroke(stroke.col);
     strokeWeight(stroke.weight);
@@ -201,9 +206,9 @@ function drawPoint() {
 }
  
 function mouseDragged() {
-    if (tool != 3){
+    if (tool != 3){ //nástroj 3 je přetáhování toolbaru po plátně
         stroke.weight = weight_slider.value();
-        switch (tool) {
+        switch (tool) { //jednotlivé funkce nástrojů - 2 je třeba guma - přeákrývá již existující věci původní barvou pozadí plátna
             case 0:
                 prev_stroke = stroke.col;
                 stroke.col = "#" + document.getElementById('col1').value;
@@ -231,8 +236,8 @@ function mouseDragged() {
         line(mouseX, mouseY, pmouseX, pmouseY);
         prev_tool = tool;
         //--------------------------------------------------
-        //Storing into super ugly buffer
-        if (prev_stroke != stroke.col){
+        //Ukládání položek do velice (ne)elegantního bufferu, fakt hrůza, neukamenujte mě za to prosím
+        if (prev_stroke != stroke.col){ //pokud se předchozí barva nerovná aktuální barvě tak překresli tplátno znova, vlastně takové pojištění proti šmouhám po výběru barev
             clear();
             background(color(default_bg_col));
             drawBuffer();           
@@ -248,5 +253,5 @@ function mouseDragged() {
         }
     }
     //--------------------------------------------------
-    return false; //cross browser compatibility
+    return false; //doporučení oficialní dokumentací p5.js, kvůli kompatibilitě mezi prohlížečí (Dívám se na tebe, Internet Explorer, grr)
 }
