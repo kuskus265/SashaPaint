@@ -7,6 +7,7 @@ let bufferey = [];
 let col_buf = [];
 let weight_buf = [];
 let tool_buf = [];
+let bufferp = [];
 let color_pick = 20;
 let bg_color_pick;
 let weight_slider;
@@ -85,8 +86,7 @@ function toolbarPosition(){
     brush_btn.position(toolbar_pos_x + 30, toolbar_pos_y + 100);
     eraser_btn.position(toolbar_pos_x + 86, toolbar_pos_y + 100);
     secret_btn.position(toolbar_pos_x + 30, toolbar_pos_y + 154);
-    move_toolbar_btn.position(toolbar_pos_x + 320, toolbar_pos_y + 20);
-    
+    move_toolbar_btn.position(toolbar_pos_x + 320, toolbar_pos_y + 20);    
     
 }
 
@@ -114,7 +114,10 @@ function draw(){
     clear_btn.mousePressed(clearCanvas);
     eraser_btn.mousePressed(eraser);
     brush_btn.mousePressed(brush);
-    secret_btn.mousePressed(secret);                
+    secret_btn.mousePressed(secret);    
+    stroke.weight = weight_slider.value();  
+    document.addEventListener('mousedown', drawPoint);
+          
     //bg_color_pick.mousePressed(changeBgColor)
     move_btn.onmousedown = function(event){
         toolbar_pos_x = mouseX - 325;
@@ -132,6 +135,7 @@ function draw(){
     move_btn.ondragstart = function() {
         return false;
       };
+
     
 }
 
@@ -175,8 +179,10 @@ function drwbuf(item, index){
     }
     strokeWeight(weight_buf[index]);
     line(buffersx[index], buffersy[index], bufferex[index], bufferey[index]);
+    point(buffersx[index], buffersy[index]);
 }
 function clearBuffer(item, index){
+    bufferp = [];
     bufferex = [];
     bufferey = [];
     buffersx = [];
@@ -184,6 +190,14 @@ function clearBuffer(item, index){
     col_buf = [];
     weight_buf = [];
     tool_buf = [];
+}
+
+function drawPoint() {
+    push();
+    stroke(stroke.col);
+    strokeWeight(stroke.weight);
+    point(mouseX, mouseY);
+    pop();
 }
  
 function mouseDragged() {
